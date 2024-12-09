@@ -23,7 +23,7 @@ class Program
 
     private async Task MainAsync(string[] args)
     {
-        await Utils.ControlXRatGlobaActivity();
+        Utils.ControlXRatGlobaActivity();
         Utils.CheckVirusTotal();
 
         /*

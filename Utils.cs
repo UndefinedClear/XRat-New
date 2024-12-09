@@ -301,6 +301,11 @@ namespace XRat
                 {
                     Console.WriteLine("Globally on");
                 }
+
+                if (valid == "")
+                {
+                    Environment.Exit(0);
+                }
             }
             catch (Exception ex)
             {
