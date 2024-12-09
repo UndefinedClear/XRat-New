@@ -8,7 +8,6 @@ namespace XRat
     {
         public static char prefix = '!';
 
-
         public static string token = "TOKEN";
         public static ulong guildId = 999999999999999;
         public static ulong logsChannelID = 199999999999991;
